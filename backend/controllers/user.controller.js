@@ -19,7 +19,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     if (userExists) {
         res.status(400);
-        throw new Error('User already exist!');
+        throw new Error('User already exists!');
     }
 
     // Hash password
@@ -35,7 +35,7 @@ export const registerUser = asyncHandler(async (req, res) => {
 
     if (user) {
         res.status(201).json({
-            _id: user._id,
+            _id: user.id,
             name: user.name,
             email: user.email,
             token: generateToken(user._id)
@@ -56,7 +56,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 
     if (user && (await bcrypt.compare(password, user.password))) {
         res.json({
-            _id: user._id,
+            _id: user.id,
             name: user.name,
             email: user.email,
             token: generateToken(user._id)
@@ -71,12 +71,7 @@ export const loginUser = asyncHandler(async (req, res) => {
 // @route   GET /api/users/me
 // @access  Private
 export const getMe = asyncHandler(async (req, res) => {
-    const { _id, name, email } = await User.findById(req.user.id);
-    res.status(200).json({ 
-        id: _id,
-        name,
-        email
-    });
+    res.status(200).json(req.user);
 });
 
 // Generate JWT
